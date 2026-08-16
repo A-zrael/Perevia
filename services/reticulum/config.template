@@ -1,0 +1,26 @@
+[reticulum]
+  enable_transport = Yes
+  share_instance = Yes
+  shared_instance_type = tcp
+  shared_instance_port = __SHARED_PORT__
+  instance_control_port = __CONTROL_PORT__
+  rpc_key = __RPC_KEY__
+
+[logging]
+  loglevel = 4
+
+[interfaces]
+  [[RNode]]
+    type = RNodeInterface
+    enabled = Yes
+    port = /dev/rnode
+    frequency = 867500000
+    bandwidth = 125000
+    spreadingfactor = 8
+    codingrate = 5
+
+  [[easytarget]]
+    type = TCPClientInterface
+    enabled = Yes
+    target_host = easytarget.org
+    target_port = 4242

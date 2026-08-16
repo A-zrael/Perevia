@@ -1,0 +1,14 @@
+{
+  "name": "PEREVIA",
+  "short_name": "PEREVIA",
+  "description": "A self-hosted browser-based LXMF messaging client.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b110e",
+  "theme_color": "#101814",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

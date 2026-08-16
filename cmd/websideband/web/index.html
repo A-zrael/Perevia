@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101814">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A self-hosted LXMF messaging client for Reticulum.">
+  <title>PEREVIA</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <section class="auth-screen" data-auth-screen>
+    <article class="auth-card">
+      <div class="auth-brand"><img src="/icon.svg" width="48" height="48" alt=""><div><strong>PEREVIA</strong><span>Private LXMF messenger</span></div></div>
+      <p class="eyebrow" data-auth-eyebrow>Secure access</p>
+      <h1 data-auth-title>Checking your session…</h1>
+      <p class="auth-intro" data-auth-intro>Your messages stay behind a local login.</p>
+      <form class="stack-form hidden" data-auth-form>
+        <label for="auth-username">Username</label>
+        <input id="auth-username" name="username" maxlength="64" autocomplete="username" required>
+        <label for="auth-password">Password</label>
+        <input id="auth-password" name="password" type="password" minlength="12" maxlength="256" autocomplete="current-password" required>
+        <button class="primary-button" type="submit" data-auth-submit>Continue</button>
+      </form>
+      <p class="auth-error" data-auth-error role="alert"></p>
+    </article>
+  </section>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand">
+        <img src="/icon.svg" width="36" height="36" alt="">
+        <div><strong>PEREVIA</strong><span>LXMF messenger</span></div>
+      </div>
+      <nav class="desktop-nav nav-list"></nav>
+      <div class="sidebar-status">
+        <span class="status-dot" data-connection-dot></span>
+        <div><strong data-connection-label>Disconnected</strong><span data-connection-detail>Bridge unavailable</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" data-view-eyebrow>Messages</p>
+          <h1 data-view-title>Conversations</h1>
+        </div>
+        <button class="icon-button" type="button" data-refresh aria-label="Refresh connection status" title="Refresh">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7"/></svg>
+        </button>
+      </header>
+      <div class="offline-banner hidden" data-offline-banner role="status">Browser offline — PEREVIA will reconnect automatically.</div>
+
+      <section class="view active" data-view="conversations">
+        <div class="conversation-layout">
+          <section class="conversation-list-panel">
+            <div class="section-heading">
+              <div><h2>Recent</h2><p>Your LXMF conversations</p></div>
+              <button class="small-button" type="button" data-open-contacts>Add contact</button>
+            </div>
+            <div class="conversation-list" data-conversation-list></div>
+          </section>
+
+          <section class="chat-panel" data-chat-panel>
+            <div class="empty-state" data-chat-empty>
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+              </div>
+              <h2>No conversation selected</h2>
+              <p>Add a contact or choose a conversation to begin.</p>
+              <button class="primary-button" type="button" data-open-contacts>Add a contact</button>
+            </div>
+            <div class="chat-content hidden" data-chat-content>
+              <header class="chat-header">
+                <button class="icon-button mobile-back" type="button" data-chat-back aria-label="Back to conversations">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="avatar" data-chat-avatar>?</div>
+                <div class="chat-identity"><h2 data-chat-name></h2><button type="button" data-chat-address></button></div>
+                <button class="small-button chat-save-contact hidden" type="button" data-save-chat-contact>Save contact</button>
+                <button class="icon-button chat-delete-conversation" type="button" data-delete-conversation aria-label="Delete conversation" title="Delete conversation">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></svg>
+                </button>
+              </header>
+              <div class="message-list" data-message-list aria-live="polite"></div>
+              <form class="composer" data-composer>
+                <button class="image-button" type="button" data-choose-image aria-label="Choose image">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                </button>
+                <input class="sr-only" type="file" data-image-input accept="image/*">
+                <button class="voice-button" type="button" data-record-voice aria-label="Record voice note" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+                </button>
+                <label class="sr-only" for="message-input">Message</label>
+                <textarea id="message-input" data-message-input rows="1" maxlength="32768" placeholder="Message…" required></textarea>
+                <button class="send-button" type="submit" aria-label="Send message">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg>
+                </button>
+              </form>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" data-view="contacts">
+        <div class="content-grid contacts-grid">
+          <article class="card identity-share-card">
+            <div class="identity-share-copy">
+              <p class="eyebrow">Your identity</p>
+              <h2>Let people add you</h2>
+              <p>Show this code in person, or share your LXMF delivery address.</p>
+              <button class="identity-address" type="button" data-own-address title="Copy address">Connect the bridge to load your address</button>
+              <div class="button-row">
+                <button class="primary-button" type="button" data-share-identity>Share address</button>
+                <button class="secondary-button" type="button" data-copy-own-address>Copy</button>
+              </div>
+            </div>
+            <div class="qr-frame" data-own-qr-frame>
+              <img data-own-qr alt="QR code for your LXMF address">
+              <span data-own-qr-placeholder>QR available when connected</span>
+            </div>
+          </article>
+          <article class="card contact-form-card">
+            <p class="eyebrow">New contact</p>
+            <h2>Add an LXMF peer</h2>
+            <p class="card-intro">Scan their code, paste an address, or type the 32-character LXMF delivery address.</p>
+            <form class="stack-form" data-contact-form>
+              <label for="contact-name">Display name</label>
+              <input id="contact-name" name="name" maxlength="80" placeholder="Alice" required autocomplete="off">
+              <label for="contact-address">LXMF address</label>
+              <input id="contact-address" name="address" minlength="32" maxlength="32" pattern="[0-9a-fA-F]{32}" placeholder="0123456789abcdef…" required autocapitalize="none" autocomplete="off" spellcheck="false">
+              <div class="contact-input-actions">
+                <button class="secondary-button" type="button" data-scan-contact>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V4a1 1 0 0 1 1-1h3M17 3h3a1 1 0 0 1 1 1v3M21 17v3a1 1 0 0 1-1 1h-3M7 21H4a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
+                  Scan QR
+                </button>
+                <button class="secondary-button" type="button" data-paste-address>Paste address</button>
+              </div>
+              <button class="primary-button" type="submit">Save contact</button>
+            </form>
+          </article>
+          <article class="card contacts-card">
+            <div class="section-heading"><div><p class="eyebrow">Address book</p><h2>Contacts</h2></div><span class="count-badge" data-contact-count>0</span></div>
+            <div class="contact-search-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <label class="sr-only" for="contact-search">Search contacts</label>
+              <input id="contact-search" type="search" data-contact-search placeholder="Search names or addresses" autocomplete="off">
+            </div>
+            <div class="contact-list" data-contact-list></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view="network">
+        <div class="status-hero card">
+          <div class="network-orbit" aria-hidden="true"><span></span><span></span><i></i></div>
+          <div><p class="eyebrow">Reticulum network</p><h2 data-network-state>Disconnected</h2><p data-network-summary>The LXMF bridge is not connected.</p></div>
+          <span class="status-pill" data-network-pill>Offline</span>
+        </div>
+        <div class="metric-grid">
+          <article class="metric-card"><span>Our LXMF address</span><button class="address-value" type="button" data-own-address title="Copy address">Unavailable</button></article>
+          <article class="metric-card"><span>Shared instance</span><strong data-shared-instance>TCP · 37428</strong></article>
+          <article class="metric-card"><span>Announces seen</span><strong data-announce-count>0</strong></article>
+        </div>
+        <article class="card announce-card">
+          <div class="section-heading"><div><p class="eyebrow">Live discovery</p><h2>Recent announces</h2></div><button class="small-button" type="button" data-announce>Announce us</button></div>
+          <div class="announce-list" data-announce-list></div>
+        </article>
+      </section>
+
+      <section class="view" data-view="settings">
+        <div class="content-grid settings-grid">
+          <article class="card configuration-card">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">Deployment</p><h2>Connection configuration</h2><p>Prepare matching settings for the three containers. Changes take effect after restarting the affected services.</p></div><span class="status-pill">Restart required</span></div>
+            <form class="configuration-form" data-configuration-form autocomplete="off">
+              <div class="field-group"><label for="bridge-host">RNSD machine / bridge IP</label><input id="bridge-host" name="bridgeHost" value="127.0.0.1" placeholder="For example: 192.168.1.4" autocapitalize="none" spellcheck="false"><small>Enter <code>192.168.1.4</code> when RNSD and the LXMF bridge run on that machine. Use <code>127.0.0.1</code> when everything runs locally.</small></div>
+              <div class="field-group"><label for="bridge-listen-address">Bridge listen IP</label><input id="bridge-listen-address" name="bridgeListenAddress" value="0.0.0.0" placeholder="127.0.0.1 or 0.0.0.0" autocapitalize="none" spellcheck="false"><small>Use <code>127.0.0.1</code> locally or <code>0.0.0.0</code> when another container/machine must connect.</small></div>
+              <div class="field-group"><label for="bridge-port">Bridge HTTP port</label><input id="bridge-port" name="bridgePort" type="number" min="1" max="65535" value="8081" inputmode="numeric"></div>
+              <div class="field-group"><label for="web-listen-address">Web listen IP</label><input id="web-listen-address" name="webListenAddress" value="127.0.0.1" placeholder="127.0.0.1, 0.0.0.0, or LAN IP" autocapitalize="none" spellcheck="false"><small>Use <code>127.0.0.1</code> for local-only access, or a LAN IP / <code>0.0.0.0</code> for other devices.</small></div>
+              <div class="field-group"><label for="web-port">Web HTTP port</label><input id="web-port" name="webPort" type="number" min="1" max="65535" value="8080" inputmode="numeric"></div>
+              <div class="field-group locked-field"><label for="rns-shared-host">Bridge → RNSD address</label><input id="rns-shared-host" value="127.0.0.1" readonly aria-readonly="true"><small>Fixed by official RNS. On <code>192.168.1.4</code>, the bridge joins the RNSD container's network namespace and reaches it locally.</small></div>
+              <div class="field-group"><label for="shared-port">RNS shared-instance port</label><input id="shared-port" name="sharedPort" type="number" min="1" max="65535" value="37428" inputmode="numeric"></div>
+              <div class="field-group"><label for="control-port">RNS control port</label><input id="control-port" name="controlPort" type="number" min="1" max="65535" value="37429" inputmode="numeric"></div>
+              <div class="field-group secret-field"><label for="bridge-api-token">Bridge API token</label><div class="input-action"><input id="bridge-api-token" name="bridgeToken" type="password" placeholder="Generate or enter token" autocomplete="new-password" autocapitalize="none" spellcheck="false"><button type="button" data-generate-secret="bridgeToken">Generate</button></div><small>Authenticates Go to the private bridge HTTP API.</small></div>
+              <div class="field-group secret-field"><label for="rns-rpc-key">RNS RPC key</label><div class="input-action"><input id="rns-rpc-key" name="rpcKey" type="password" minlength="32" placeholder="Must match rnsd" autocomplete="new-password" autocapitalize="none" spellcheck="false"><button type="button" data-generate-secret="rpcKey">Generate</button></div><small>The same hexadecimal key must be configured in <code>rnsd</code> and the bridge.</small></div>
+            </form>
+            <div class="configuration-output">
+              <div class="output-heading"><div><strong>Generated configuration</strong><span>Review, copy, then apply outside the browser.</span></div><button class="small-button" type="button" data-copy-configuration>Copy all</button></div>
+              <label class="sr-only" for="configuration-snippet">Generated configuration</label>
+              <textarea id="configuration-snippet" data-configuration-output readonly rows="14" spellcheck="false"></textarea>
+            </div>
+            <p class="secret-note"><strong>Example for RNSD at 192.168.1.4:</strong> enter <code>192.168.1.4</code> in the first field. Run <code>lxmf-bridge</code> beside RNSD on that host. PEREVIA connects to <code>192.168.1.4:8081</code>; the bridge connects to RNSD at <code>127.0.0.1:37428</code>.<br><strong>Secret handling:</strong> tokens and RPC keys remain only in this page's memory. They are not sent to the server, written to browser storage, or included in application logs.<br><strong>Remote bridge:</strong> keep port 8081 on a trusted private network or place it behind authenticated TLS; never expose it publicly.</p>
+          </article>
+          <article class="card">
+            <p class="eyebrow">Messaging</p><h2>Delivery preferences</h2>
+            <div class="settings-row"><div><strong>Delivery method</strong><span>Direct creates an encrypted Reticulum link.</span></div><select data-delivery-method><option value="direct">Direct</option><option value="opportunistic">Opportunistic</option></select></div>
+            <div class="settings-row"><div><strong>Realtime events</strong><span>Incoming messages and state changes over SSE.</span></div><span class="status-pill" data-events-state>Offline</span></div>
+          </article>
+          <article class="card">
+            <p class="eyebrow">Alerts</p><h2>Incoming messages</h2>
+            <div class="settings-row"><div><strong>Browser notifications</strong><span data-notification-detail>Permission has not been requested.</span></div><button class="small-button" type="button" data-enable-notifications>Enable</button></div>
+            <div class="settings-row"><div><strong>Preview privacy</strong><span>Choose what appears on the lock screen.</span></div><select data-notification-privacy><option value="full">Name and message</option><option value="name">Contact name only</option><option value="hidden">Hide all details</option></select></div>
+            <label class="toggle-row"><span><strong>Notification sound</strong><small>Play a short local alert while PEREVIA is open.</small></span><input type="checkbox" data-notification-sound checked></label>
+            <label class="toggle-row"><span><strong>Vibration</strong><small>Vibrate on supported mobile browsers.</small></span><input type="checkbox" data-notification-vibration checked></label>
+          </article>
+          <article class="card">
+            <p class="eyebrow">App</p><h2>Install PEREVIA</h2>
+            <p class="card-intro" data-install-detail>Install PEREVIA for a full-screen app experience and faster access.</p>
+            <button class="secondary-button" type="button" data-install-app>Install app</button>
+          </article>
+          <article class="card">
+            <p class="eyebrow">Security</p><h2>Web access</h2>
+            <div class="settings-row"><div><strong>Login</strong><span data-auth-user>Administrator session</span></div><span class="status-pill online">Protected</span></div>
+            <div class="settings-row"><div><strong>Connection</strong><span data-transport-detail>Checking browser security…</span></div><span class="status-pill" data-transport-state>Checking</span></div>
+            <button class="secondary-button" type="button" data-logout>Sign out</button>
+          </article>
+          <article class="card">
+            <p class="eyebrow">Identity</p><h2>This device</h2>
+            <dl class="detail-list"><div><dt>Display name</dt><dd data-setting-name>PEREVIA</dd></div><div><dt>LXMF address</dt><dd><button type="button" data-setting-address>Unavailable</button></dd></div><div><dt>Identity storage</dt><dd>Encrypted messaging bridge volume</dd></div></dl>
+            <form class="identity-name-form" data-identity-name-form>
+              <label for="identity-display-name">Public display name</label>
+              <div class="input-action"><input id="identity-display-name" name="displayName" maxlength="64" placeholder="PEREVIA" required><button type="submit">Save</button></div>
+              <small>Included in future LXMF announces so nearby peers can recognise you.</small>
+            </form>
+            <button class="secondary-button" type="button" data-announce>Send announce</button>
+          </article>
+          <article class="card prototype-note">
+            <p class="eyebrow">Storage</p><h2>Your data</h2><p>Contacts and conversation history are stored in PEREVIA's private SQLite volume. Interface preferences stay in this browser, while the bridge owns the cryptographic identity.</p>
+            <button class="danger-button" type="button" data-reset-preferences>Reset interface preferences</button>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav nav-list" aria-label="Primary navigation"></nav>
+  </div>
+  <dialog class="scanner-dialog" data-scanner-dialog>
+    <div class="scanner-header">
+      <div><p class="eyebrow">Add contact</p><h2>Scan LXMF address</h2></div>
+      <button class="icon-button" type="button" data-close-scanner aria-label="Close scanner">×</button>
+    </div>
+    <div class="scanner-stage">
+      <video data-scanner-video playsinline muted></video>
+      <div class="scanner-reticle" aria-hidden="true"></div>
+      <div class="scanner-placeholder" data-scanner-placeholder>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V4a1 1 0 0 1 1-1h3M17 3h3a1 1 0 0 1 1 1v3M21 17v3a1 1 0 0 1-1 1h-3M7 21H4a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
+        <strong>Point the camera at an address QR code</strong>
+        <span>Camera access needs HTTPS when opened from another device.</span>
+      </div>
+      <canvas data-scanner-canvas class="hidden"></canvas>
+    </div>
+    <p class="scanner-status" data-scanner-status>Starting camera…</p>
+    <div class="scanner-actions">
+      <button class="secondary-button" type="button" data-pick-qr>Choose QR image</button>
+      <input class="sr-only" type="file" data-qr-file accept="image/*" capture="environment">
+      <button class="secondary-button" type="button" data-paste-address>Paste address</button>
+    </div>
+  </dialog>
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+  <template id="nav-item-template"><button type="button"><svg viewBox="0 0 24 24" aria-hidden="true"></svg><span></span></button></template>
+</body>
+</html>

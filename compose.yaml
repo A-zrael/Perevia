@@ -1,0 +1,148 @@
+name: perevia
+
+services:
+  reticulum:
+    image: localhost/websideband-reticulum:dev
+    container_name: reticulum
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        export RNS_RPC_KEY="$$(tr -d '\r\n ' < /run/secrets/rns_rpc_key)"
+        exec /usr/local/bin/reticulum-entrypoint
+    environment:
+      RNS_SHARED_INSTANCE_PORT: "37428"
+      RNS_INSTANCE_CONTROL_PORT: "37429"
+    secrets:
+      - rns_rpc_key
+    devices:
+      - "${RNODE_DEVICE:-/dev/ttyUSB0}:/dev/rnode"
+    group_add:
+      - keep-groups
+    volumes:
+      - reticulum-data:/data:Z
+    networks:
+      - perevia-internal
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import os,socket; socket.create_connection(('127.0.0.1', int(os.getenv('RNS_SHARED_INSTANCE_PORT', '37428'))), 3).close()"
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  lxmf-bridge:
+    image: localhost/lxmf-bridge:dev
+    container_name: lxmf-bridge
+    restart: unless-stopped
+    network_mode: service:reticulum
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        export RNS_RPC_KEY="$$(tr -d '\r\n ' < /run/secrets/rns_rpc_key)"
+        export LXMF_BRIDGE_TOKEN="$$(tr -d '\r\n' < /run/secrets/bridge_token)"
+        exec python /app/bridge.py
+    environment:
+      LXMF_DATA_DIR: /data
+      LXMF_DISPLAY_NAME: "${LXMF_DISPLAY_NAME:-PEREVIA}"
+      LXMF_ANNOUNCE_AT_START: "true"
+      LXMF_PATH_TIMEOUT_SECONDS: "30"
+      RNS_SHARED_INSTANCE_PORT: "37428"
+      RNS_INSTANCE_CONTROL_PORT: "37429"
+    secrets:
+      - rns_rpc_key
+      - bridge_token
+    volumes:
+      - lxmf-bridge-data:/data:Z
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/healthz', timeout=3)"
+      interval: 15s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+    depends_on:
+      reticulum:
+        condition: service_healthy
+
+  websideband:
+    image: localhost/websideband:dev
+    container_name: websideband
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        export LXMF_BRIDGE_TOKEN="$$(tr -d '\r\n' < /run/secrets/bridge_token)"
+        exec /usr/local/bin/websideband
+    environment:
+      WEBSIDEBAND_LISTEN_ADDRESS: ":8080"
+      WEBSIDEBAND_DATA_DIR: /data
+      LXMF_BRIDGE_URL: http://reticulum:8081
+    secrets:
+      - bridge_token
+    ports:
+      - "${PEREVIA_BIND_ADDRESS:-0.0.0.0}:${PEREVIA_PORT:-8080}:8080"
+    volumes:
+      - websideband-data:/data:Z
+    networks:
+      - perevia-internal
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - --spider
+        - http://127.0.0.1:8080/healthz
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    depends_on:
+      lxmf-bridge:
+        condition: service_healthy
+
+secrets:
+  rns_rpc_key:
+    file: ./rns-rpc-key
+  bridge_token:
+    file: ./bridge-token
+
+volumes:
+  reticulum-data:
+    external: true
+  lxmf-bridge-data:
+    external: true
+  websideband-data:
+    external: true
+
+networks:
+  perevia-internal:
+    name: websideband-internal
+    external: true

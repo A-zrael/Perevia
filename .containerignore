@@ -1,0 +1,6 @@
+.git
+.agents
+.codex
+docs
+**/*_test.go
+README.md
